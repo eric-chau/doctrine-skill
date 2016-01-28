@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Jarvis\Skill\Doctrine;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Jarvis\Skill\EventBroadcaster\SimpleEvent;
 
 /**
@@ -16,7 +16,7 @@ class DoctrineEvent extends SimpleEvent
 
     private $enty;
 
-    public function __construct(EntityManager $entyMgr)
+    public function __construct(EntityManagerInterface $entyMgr)
     {
         $this->entyMgr = $entyMgr;
     }
