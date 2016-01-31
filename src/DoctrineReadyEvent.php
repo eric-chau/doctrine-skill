@@ -5,14 +5,14 @@ declare(strict_types = 1);
 namespace Jarvis\Skill\Doctrine;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Jarvis\Skill\EventBroadcaster\SimpleEvent;
+use Jarvis\Skill\EventBroadcaster\PermanentEvent;
 
 /**
  * @author Eric Chau <eriic.chau@gmail.com>
  */
-class DoctrineEvent extends SimpleEvent
+class DoctrineReadyEvent extends PermanentEvent
 {
-    const INIT_EVENT = 'doctrine.init';
+    const READY_EVENT = 'doctrine.ready';
 
     private $enty;
 

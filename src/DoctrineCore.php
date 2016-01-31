@@ -55,7 +55,7 @@ class DoctrineCore implements ContainerProviderInterface
                 $entyMgr = new $fqcn($entyMgr);
             }
 
-            $jarvis->broadcast(DoctrineEvent::INIT_EVENT, new DoctrineEvent($entyMgr));
+            $jarvis->broadcast(DoctrineReadyEvent::READY_EVENT, new DoctrineReadyEvent($entyMgr));
 
             return $entyMgr;
         };
