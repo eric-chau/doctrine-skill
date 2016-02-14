@@ -6,8 +6,9 @@ namespace Jarvis\Skill\Doctrine;
 
 use Doctrine\Common\Annotations\{AnnotationReader, AnnotationRegistry};
 use Doctrine\Common\Cache\VoidCache;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\Setup;
 use Jarvis\Jarvis;
@@ -54,6 +55,20 @@ class DoctrineCore implements ContainerProviderInterface
             ) {
                 $entyMgr = new $fqcn($entyMgr);
             }
+
+            $entyMgr->getEventManager()->addEventListener([
+                Events::preRemove,
+                Events::postRemove,
+                Events::prePersist,
+                Events::postPersist,
+                Events::preUpdate,
+                Events::postUpdate,
+                Events::postLoad,
+                Events::preFlush,
+                Events::onFlush,
+                Events::postFlush,
+                Events::onClear,
+            ], new EventListener($jarvis));
 
             $jarvis->broadcast(DoctrineReadyEvent::READY_EVENT, new DoctrineReadyEvent($entyMgr));
 
