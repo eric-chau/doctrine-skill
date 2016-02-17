@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Jarvis\Skill\Doctrine;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\Common\EventArgs;
 use Jarvis\Jarvis;
 
 /**
@@ -21,67 +22,77 @@ class EventListener
 
     public function preRemove(LifecycleEventArgs $event)
     {
-        $this->broadcastEvent($event->getEntity(), __FUNCTION__);
+        $this->broadcastEntityEvent($event, __FUNCTION__);
     }
 
     public function postRemove(LifecycleEventArgs $event)
     {
-        $this->broadcastEvent($event->getEntity(), __FUNCTION__);
+        $this->broadcastEntityEvent($event, __FUNCTION__);
     }
 
     public function prePersist(LifecycleEventArgs $event)
     {
-        $this->broadcastEvent($event->getEntity(), __FUNCTION__);
+        $this->broadcastEntityEvent($event, __FUNCTION__);
     }
 
     public function postPersist(LifecycleEventArgs $event)
     {
-        $this->broadcastEvent($event->getEntity(), __FUNCTION__);
+        $this->broadcastEntityEvent($event, __FUNCTION__);
     }
 
     public function preUpdate(LifecycleEventArgs $event)
     {
-        $this->broadcastEvent($event->getEntity(), __FUNCTION__);
+        $this->broadcastEntityEvent($event, __FUNCTION__);
     }
 
     public function postUpdate(LifecycleEventArgs $event)
     {
-        $this->broadcastEvent($event->getEntity(), __FUNCTION__);
+        $this->broadcastEntityEvent($event, __FUNCTION__);
     }
 
     public function postLoad(LifecycleEventArgs $event)
     {
-        $this->broadcastEvent($event->getEntity(), __FUNCTION__);
+        $this->broadcastEntityEvent($event, __FUNCTION__);
     }
 
-    public function preFlush(LifecycleEventArgs $event)
+    public function preFlush(EventArgs $event)
     {
-        $this->broadcastEvent($event->getEntity(), __FUNCTION__);
+        $this->broadcastEntyMgrEvent($event, __FUNCTION__);
     }
 
-    public function onFlush(LifecycleEventArgs $event)
+    public function onFlush(EventArgs $event)
     {
-        $this->broadcastEvent($event->getEntity(), __FUNCTION__);
+        $this->broadcastEntyMgrEvent($event, __FUNCTION__);
     }
 
-    public function postFlush(LifecycleEventArgs $event)
+    public function postFlush(EventArgs $event)
     {
-        $this->broadcastEvent($event->getEntity(), __FUNCTION__);
+        $this->broadcastEntyMgrEvent($event, __FUNCTION__);
     }
 
-    public function onClear(LifecycleEventArgs $event)
+    public function onClear(EventArgs $event)
     {
-        $this->broadcastEvent($event->getEntity(), __FUNCTION__);
+        $this->broadcastEntyMgrEvent($event, __FUNCTION__);
     }
 
-    protected function broadcastEvent($entity, string $eventType)
+    protected function broadcastEntityEvent(LifecycleEventArgs $previousEvent, string $eventType)
     {
-        $event = new LifecycleEvent($entity, strtolower($eventType));
+        $entity = $previousEvent->getEntity();
+
+        $event = new LifecycleEvent($entity, strtolower($eventType), $previousEvent);
         foreach (array_merge([get_class($entity)], class_parents($entity)) as $classname) {
             $eventName = str_replace('\\', '.', $classname);
             $eventName = strtolower("$eventName.$eventType");
 
             $this->jarvis->broadcast($eventName, $event);
         }
+    }
+
+    protected function broadcastEntyMgrEvent(EventArgs $previousEvent, $eventType)
+    {
+        $this->jarvis->broadcast(
+            strtolower("entitymanager.$eventType"),
+            new EntityManagerEvent($previousEvent->getEntityManager(), $eventType, $previousEvent)
+        );
     }
 }

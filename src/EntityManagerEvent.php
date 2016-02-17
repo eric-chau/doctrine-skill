@@ -4,28 +4,28 @@ declare(strict_types = 1);
 
 namespace Jarvis\Skill\Doctrine;
 
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\Common\EventArgs;
 use Jarvis\Skill\EventBroadcaster\SimpleEvent;
 
 /**
  * @author Eric Chau <eriic.chau@gmail.com>
  */
-class LifecycleEvent extends SimpleEvent
+class EntityManagerEvent extends SimpleEvent
 {
-    protected $entity;
+    protected $entyMgr;
     protected $eventName;
     protected $previousEvent;
 
-    public function __construct($entity, string $eventName, LifecycleEventArgs $previousEvent)
+    public function __construct($entyMgr, string $eventName, EventArgs $previousEvent)
     {
-        $this->entity = $entity;
+        $this->entyMgr = $entyMgr;
         $this->eventName = $eventName;
         $this->previousEvent = $previousEvent;
     }
 
-    public function entity()
+    public function entyMgr()
     {
-        return $this->entity;
+        return $this->entyMgr;
     }
 
     public function eventName()
