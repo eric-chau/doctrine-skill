@@ -19,22 +19,22 @@ use Jarvis\Skill\DependencyInjection\ContainerProviderInterface;
  */
 class DoctrineCore implements ContainerProviderInterface
 {
-    public function hydrate(Jarvis $jarvis)
+    public function hydrate(Jarvis $app)
     {
-        $jarvis['doctrine.cache'] = function () {
+        $app['doctrine.cache'] = function() {
             return new VoidCache();
         };
 
-        $jarvis['doctrine.annotation.driver'] = function () {
+        $app['doctrine.annotation.driver'] = function() {
             return new AnnotationDriver(new AnnotationReader());
         };
 
-        $jarvis['entyMgr'] = function (Jarvis $jarvis) {
-            $settings = $jarvis->settings->get('doctrine');
+        $app['entyMgr'] = function(Jarvis $app) {
+            $settings = $app->settings->get('doctrine');
 
-            $cache = $jarvis['doctrine.cache'];
+            $cache = $app['doctrine.cache'];
             $config = Setup::createConfiguration($settings['debug'], $settings['proxies_dir'], $cache);
-            $driver = $jarvis['doctrine.annotation.driver'];
+            $driver = $app['doctrine.annotation.driver'];
 
             if (isset($settings['entities_paths'])) {
                 $driver->addPaths((array) $settings['entities_paths']);
@@ -49,8 +49,8 @@ class DoctrineCore implements ContainerProviderInterface
 
             $entyMgr = EntityManager::create($settings['dbal'], $config);
             if (
-                isset($jarvis['doctrine.orm.entyMgr.decorator'])
-                && is_string($fqcn = $jarvis['doctrine.orm.entyMgr.decorator'])
+                isset($app['doctrine.orm.entyMgr.decorator'])
+                && is_string($fqcn = $app['doctrine.orm.entyMgr.decorator'])
                 && is_subclass_of($fqcn, EntityManagerDecorator::class)
             ) {
                 $entyMgr = new $fqcn($entyMgr);
@@ -68,17 +68,17 @@ class DoctrineCore implements ContainerProviderInterface
                 Events::onFlush,
                 Events::postFlush,
                 Events::onClear,
-            ], new EventListener($jarvis));
+            ], new EventListener($app));
 
-            $jarvis->broadcast(DoctrineReadyEvent::READY_EVENT, new DoctrineReadyEvent($entyMgr));
+            $app->broadcast(DoctrineReadyEvent::READY_EVENT, new DoctrineReadyEvent($entyMgr));
 
             return $entyMgr;
         };
 
-        $jarvis['db_conn'] = function($jarvis) {
-            $jarvis->entyMgr->getConnection();
+        $app['db_conn'] = function($app) {
+            $app->entyMgr->getConnection();
         };
 
-        $jarvis->lock(['entyMgr', 'db_conn', 'doctrine.annotation.driver']);
+        $app->lock(['entyMgr', 'db_conn', 'doctrine.annotation.driver']);
     }
 }
