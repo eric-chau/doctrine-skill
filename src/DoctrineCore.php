@@ -21,15 +21,15 @@ class DoctrineCore implements ContainerProviderInterface
 {
     public function hydrate(Jarvis $app)
     {
-        $app['doctrine.cache'] = function() {
+        $app['doctrine.cache'] = function () {
             return new VoidCache();
         };
 
-        $app['doctrine.annotation.driver'] = function() {
+        $app['doctrine.annotation.driver'] = function () {
             return new AnnotationDriver(new AnnotationReader());
         };
 
-        $app['entyMgr'] = function(Jarvis $app) {
+        $app['entyMgr'] = function (Jarvis $app): EntityManager {
             $settings = $app->settings->get('doctrine');
 
             $cache = $app['doctrine.cache'];
@@ -75,7 +75,7 @@ class DoctrineCore implements ContainerProviderInterface
             return $entyMgr;
         };
 
-        $app['db_conn'] = function($app) {
+        $app['db_conn'] = function ($app) {
             $app->entyMgr->getConnection();
         };
 
