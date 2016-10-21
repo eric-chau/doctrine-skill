@@ -1,2 +1,3 @@
-# doctrine-skill
-Integration of Doctrine 2 into Jarvis
+# Doctrine skill
+
+Integration of Doctrine2 into Jarvis.
