@@ -26,7 +26,7 @@ class DoctrineCommandHandler extends AbstractCommandHandler
 
     public function handleDatabaseCreate(Args $args, IO $io, Command $command)
     {
-        $params = $this->app->settings->get('doctrine')['dbal'];
+        $params = $this->app['doctrine.settings']['dbal'];
         $name = $params['dbname'] ?? null;
         if (false == $name) {
             $io->writeLine("<error>Database's name is missing from provided settings.</error>");
@@ -66,8 +66,8 @@ class DoctrineCommandHandler extends AbstractCommandHandler
 
     public function handleDatabaseUpdate(Args $args, IO $io, Command $command)
     {
-        $tool = new SchemaTool($this->app->entyMgr);
-        $tool->updateSchema($this->app->entyMgr->getMetadataFactory()->getAllMetadata());
+        $tool = new SchemaTool($this->app['entyMgr']);
+        $tool->updateSchema($this->app['entyMgr']->getMetadataFactory()->getAllMetadata());
 
         $io->writeLine("<info>Database schema updated.</info>");
 

@@ -13,11 +13,11 @@ use Jarvis\Jarvis;
  */
 class EventListener
 {
-    protected $jarvis;
+    protected $app;
 
-    public function __construct(Jarvis $jarvis)
+    public function __construct(Jarvis $app)
     {
-        $this->jarvis = $jarvis;
+        $this->app = $app;
     }
 
     public function preRemove(LifecycleEventArgs $event)
@@ -82,16 +82,16 @@ class EventListener
         $event = new LifecycleEvent($entity, strtolower($eventType), $previousEvent);
         foreach (array_merge([get_class($entity)], class_parents($entity)) as $classname) {
             $eventName = str_replace('\\', '.', $classname);
-            $eventName = strtolower("$eventName.$eventType");
+            $eventName = strtolower("{$eventName}.{$eventType}");
 
-            $this->jarvis->broadcast($eventName, $event);
+            $this->app->broadcast($eventName, $event);
         }
     }
 
     protected function broadcastEntyMgrEvent(EventArgs $previousEvent, $eventType)
     {
-        $this->jarvis->broadcast(
-            strtolower("entitymanager.$eventType"),
+        $this->app->broadcast(
+            strtolower("entitymanager.{$eventType}"),
             new EntityManagerEvent($previousEvent->getEntityManager(), $eventType, $previousEvent)
         );
     }

@@ -30,7 +30,7 @@ class DoctrineCore implements ContainerProviderInterface
         };
 
         $app['entyMgr'] = function (Jarvis $app): EntityManager {
-            $settings = $app->settings->get('doctrine');
+            $settings = $app['doctrine.settings'];
 
             $cache = $app['doctrine.cache'];
             $config = Setup::createConfiguration($settings['debug'], $settings['proxies_dir'], $cache);
@@ -76,7 +76,7 @@ class DoctrineCore implements ContainerProviderInterface
         };
 
         $app['db_conn'] = function ($app) {
-            $app->entyMgr->getConnection();
+            $app['entyMgr']->getConnection();
         };
 
         $app->lock(['entyMgr', 'db_conn', 'doctrine.annotation.driver']);
