@@ -8,6 +8,7 @@ use Doctrine\Common\Annotations\{AnnotationReader, AnnotationRegistry};
 use Doctrine\Common\Cache\VoidCache;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\Setup;
@@ -29,7 +30,7 @@ class DoctrineCore implements ContainerProviderInterface
             return new AnnotationDriver(new AnnotationReader());
         };
 
-        $app['entyMgr'] = function (Jarvis $app): EntityManager {
+        $app['entyMgr'] = function (Jarvis $app): EntityManagerInterface {
             $settings = $app['doctrine.settings'];
 
             $cache = $app['doctrine.cache'];
